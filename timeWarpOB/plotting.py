@@ -2,6 +2,8 @@ def plotWarp(a,b,warpObj, ts=[]):
 	'''Plots the cost matrix and backtrace path
 	'''
 
+	import matplotlib.pyplot as plt
+
 	costMat = warpObj["costMat"]
 	path = warpObj['backTracePath']
 	w = warpObj['warpWindow']
@@ -63,7 +65,7 @@ def plotWarp(a,b,warpObj, ts=[]):
 	xMax = len(a)
 	yMin = -(w) - 1
 	yMax = (w) + 1
-	avgWarp = wo['warpStats']['avgWarp']
+	avgWarp = warpObj['warpStats']['avgWarp']
 
 	plt.plot([0,xMax], [0,0], 'y')
 	plt.plot([0,xMax], [-(w),-(w)], 'm--')
@@ -92,6 +94,9 @@ def plotWarp(a,b,warpObj, ts=[]):
 
 
 def plotSeries(a,b,path):
+
+	import matplotlib.pyplot as plt
+
 	plt.plot(a, 'bo-' ,label='x')
 	plt.plot(b, 'g^-', label = 'y')
 	plt.legend();

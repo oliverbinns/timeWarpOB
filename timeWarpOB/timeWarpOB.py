@@ -1,7 +1,4 @@
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
-
-def timeWarp(a,b,method='DTW',window=0,retMat=False,**kwargs):
+def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 	'''Time warping interface
 
 	A - timeseries 1 as a python list
