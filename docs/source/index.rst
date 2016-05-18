@@ -1,22 +1,23 @@
-.. timeWarpOB documentation master file, created by
-   sphinx-quickstart on Wed May 18 16:38:14 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+timeWarpOB - documentation
+==========================
 
-Welcome to timeWarpOB's documentation!
-======================================
+timeWarpOB is a Dynamic Time Warping implementation, built in python, by Oliver Binns
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   about
+   installation
+   usage
+   APIref
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. Indices and tables
+   ==================
+   * :ref:`genindex`
+	* :ref:`modindex`
+	* :ref:`search`
 
