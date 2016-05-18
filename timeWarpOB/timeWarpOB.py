@@ -1,13 +1,78 @@
 def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
-	'''Time warping interface
+	'''This function is the main time warping interface, and acts
+	as a convenient wrapper to the other functions.
 
-	A - timeseries 1 as a python list
-	B - timeseries 2 as a python list
-	method - DTW, ERP
-	window = 0 for no window
-	retMat - return cost and distance matrices
-	kwargs 
-		- ERPg - ERP g value
+	Parameters
+	----------
+		a : list
+			First time series, which will be compared against time series b
+		b : list 
+			Second time series (reference)
+		method : str
+			Time warping method ``{'DTW','ERP'}`` - see below
+		window : int
+			Time warping window constraint (default = 0)
+		retMat : bool
+			Whether to include the cost matrices in the returned object
+		ERPg :	int
+			g-value (for ``method = 'ERP'`` only)
+
+	Returns
+	-------
+		warpObj : dict
+			A timeWarpOB warp object, containing the following items:
+		warpObj.backTraceCost : float
+			The sum cost of following the backtrace through the cost matrix
+		warpObj.backTracePath : list
+			List of pairs of coordinates in time-space describing the backtrace through
+			the cost matrix
+		warpObj.cost : float
+			Bottom left value on the cost matrix.  With no warping window, this should 
+			equal warpObj.backTraceCost
+		warpObj.costMat : list
+			A matrix (list of lists) describing the cost matrix between the two time 
+			series.  For a series of length n, this matrix will be of size n x n.  Only 
+			output if ``retMat = True`` in the input parameters
+		warpObj.distMat : list	
+			A matrix (list of lists) describing the L1-distance matrix between the two 
+			time series.  For a series of length n, this matrix will be of size n x n.  
+			Only output if ``retMat = True`` in the input parameters
+		warpObj.warpWindow : int
+			Returning the warp window parameter used (used by plotting functions)
+		warpObj.warpStats : dict
+			Warp statistics object, containing:		
+		warpObj.warpStats.timeAhead : int
+			The number of periods that time series a was in sync with time series b.
+		warpObj.warpStats.timeAhead : int
+			The number of periods that time series a was ahead of time series b.	
+		warpObj.warpStats.timeBehind : int
+			The number of periods that time series a was behind of time series b.	
+		warpObj.warpStats.amountAhead : int
+			The total sum of the number of periods that time series a was leading 
+			time series b by.
+		warpObj.warpStats.amountBehind : int
+			The total sum of the number of periods that time series a was lagging
+			time series b by.
+		warpObj.warpStats.avgAhead : int
+			Average amount of periods that a was ahead of a by, i.e. 
+			amountAhead divided by timeAhead
+		warpObj.warpStats.avgAhead : int
+			Average amount of periods that a was behind b by, i.e. 
+			amountBehind divided by timeBehind
+		warpObj.warpStats.avgWarp : int
+			Average amount of periods that a ahead or behind b by, i.e. 
+			``(amountAhead - amountBehind) / (timeAhead + timeBehind + timeSync)``
+			This will give positive values if a is on average ahead of b and negative
+			values is a is on average behind b.
+
+	Notes
+	-----
+	* Time series should be of equal length.  If they are not, the longer will be clipped from the end.
+
+	* ERP and DTW methods are available.  For information on how they work, see the module documentation.
+
+	* Cost matricies should be returned for use by the plotting functions
+
 	'''
 
 	# Create a warp object to return
@@ -61,6 +126,19 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 def L1distances(a,b):
 	'''Calcluates the L1 distance matrix between two time series.
+
+	Parameters
+	----------
+		a : list
+			First time series, which will be compared against time series b
+		b : list 
+			Second time series (reference)
+
+	Returns
+	-------
+		distance : list	
+			A matrix (list of lists) describing the L1-distance matrix between the two 
+			time series.  For a series of length n, this matrix will be of size n x n.  
 	'''
 	n = len(a)
 	m = len(b)
@@ -82,6 +160,26 @@ def L1distances(a,b):
 
 def ERPwarp(dist,x,y,w=0,g=0):
 	'''Calcluates the ERP cost matrix between two time series.
+
+	Parameters
+	----------
+		dist : list
+			A matrix (list of lists) describing the L1-distance matrix between two 
+			time series.  For a time series of length n, this matrix must be of size n x n.
+		x : list
+			First time series, which will be compared against time series y
+		y : list 
+			Second time series (reference)
+		w : int
+			Time warping window constraint (default = 0)
+		g :	int
+			ERP g-value (deafult = 0)
+
+	Returns
+	-------
+		costMat : list
+			A matrix (list of lists) describing the ERP cost matrix between the two time 
+			series.  For a series of length n, this matrix will be of size n x n. 
 	'''
 	n = len(x)
 	m = len(y)
@@ -122,6 +220,24 @@ def ERPwarp(dist,x,y,w=0,g=0):
 
 def DTWwarp(dist,x,y,w=0):
 	'''Calcluates the ERP cost matrix between two time series.
+
+	Parameters
+	----------
+		dist : list
+			A matrix (list of lists) describing the L1-distance matrix between two 
+			time series.  For a time series of length n, this matrix must be of size n x n.
+		x : list
+			First time series, which will be compared against time series y
+		y : list 
+			Second time series (reference)
+		w : int
+			Time warping window constraint (default = 0)
+
+	Returns
+	-------
+		costMat : list
+			A matrix (list of lists) describing the DTW cost matrix between the two time 
+			series.  For a series of length n, this matrix will be of size n x n. 
 	'''
 	n = len(x)
 	m = len(y)
@@ -157,7 +273,49 @@ def DTWwarp(dist,x,y,w=0):
 
 
 def backTrace(costMat,dist):
-	'''Finds the optimal warping path by backtracking
+	'''Finds the optimal warping path by backtracking through the cost matrix.
+
+	Parameters
+	----------
+		dist : list
+			A matrix (list of lists) describing the L1-distance matrix between two 
+			time series.  For a time series of length n, this matrix must be of size n x n.
+		costMat : list
+			A matrix (list of lists) describing the time-warped cost matrix between two 
+			time series.  For a time series of length n, this matrix must be of size n x n.
+
+	Returns
+	-------
+		path : list
+			List of pairs of coordinates in time-space describing the backtrace through
+			the cost matrix
+		backTraceCost : float
+			The sum cost of following the backtrace through the cost matrix
+		warpStats : dict
+			Warp statistics object, containing:		
+		warpStats.timeAhead : int
+			The number of periods that time series a was in sync with time series b.
+		warpStats.timeAhead : int
+			The number of periods that time series a was ahead of time series b.	
+		warpStats.timeBehind : int
+			The number of periods that time series a was behind of time series b.	
+		warpStats.amountAhead : int
+			The total sum of the number of periods that time series a was leading 
+			time series b by.
+		warpStats.amountBehind : int
+			The total sum of the number of periods that time series a was lagging
+			time series b by.
+		warpStats.avgAhead : int
+			Average amount of periods that a was ahead of a by, i.e. 
+			amountAhead divided by timeAhead
+		warpStats.avgAhead : int
+			Average amount of periods that a was behind b by, i.e. 
+			amountBehind divided by timeBehind
+		warpStats.avgWarp : int
+			Average amount of periods that a ahead or behind b by, i.e. 
+			``(amountAhead - amountBehind) / (timeAhead + timeBehind + timeSync)``
+			This will give positive values if a is on average ahead of b and negative
+			values is a is on average behind b.
 	'''
 	
 	timeAhead = 0

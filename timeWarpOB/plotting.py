@@ -1,5 +1,26 @@
 def plotWarp(a,b,warpObj, ts=[]):
-	'''Plots the cost matrix and backtrace path
+	'''Plots the comprehensive results of a time warp, including the 
+	cost matrix, backtrace path, visualisation of the warping statistics and the 
+	individual time series, with warp lines.
+
+	Parameters
+	----------
+		a : list
+			First time series, which has been warped against time series b
+		b : list 
+			Second time series (reference)
+		warpObj : dict
+			A timeWarpOB warp object - see output of ``timeWarpOB.timeWarp()``.
+			NB: the object must contain the calclauted cost matrix (i.e. ``retMat = True``)
+		ts : list
+			Optional list of timestamps for displaying on the graphs. If no timestamps are 
+			given, each time period will be given an incremented number, staring at 1.
+
+	Returns
+	-------
+		matplotlib.pyplot
+			A composite plot showing the results of the time warp.
+
 	'''
 
 	import matplotlib.pyplot as plt
@@ -94,8 +115,26 @@ def plotWarp(a,b,warpObj, ts=[]):
 
 
 def plotSeries(a,b,path):
+	'''Plots the two time series with warp lines as a single plot
+
+	Parameters
+	----------
+		a : list
+			First time series, which has been warped against time series b
+		b : list 
+			Second time series (reference)
+		warpObj : dict
+			A timeWarpOB warp object - see output of ``timeWarpOB.timeWarp()``.
+
+	Returns
+	-------
+		matplotlib.pyplot
+			A single plot showing the warp lines on the two time series.
+	'''
 
 	import matplotlib.pyplot as plt
+
+	path = warpObj["backTracePath"]
 
 	plt.plot(a, 'bo-' ,label='x')
 	plt.plot(b, 'g^-', label = 'y')
