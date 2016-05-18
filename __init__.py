@@ -11,6 +11,7 @@ from __future__ import division, print_function
 
 # Define timeWarp imports
 from .timeWarpOB import *
+from . import plotting
 import tests
 
 # Define colours for display
