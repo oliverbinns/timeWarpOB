@@ -3,3 +3,5 @@
 MNISTdata
 /docs/build*
 timeWarpOB.egg-info/
+build/
+dist/
