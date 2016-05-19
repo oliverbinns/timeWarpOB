@@ -2,3 +2,4 @@
 *.pkl
 MNISTdata
 /docs/build*
+timeWarpOB.egg-info/
