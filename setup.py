@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
 	name='timeWarpOB',
-	version='1.0.0',
+	version='1.0.1',
 	description='A Dynamic Time Warping implementation',
 	long_description=long_description,
 	url='https://github.com/oliverbinns/timeWarpOB',
@@ -34,6 +34,6 @@ setup(
         'Programming Language :: Python :: 3'
     ],
     keywords='time warp algorithm timeseries',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    packages=find_packages(exclude=['contrib']),
     install_requires=['matplotlib','numpy'],
 	)
