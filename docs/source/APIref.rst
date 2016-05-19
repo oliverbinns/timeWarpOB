@@ -25,3 +25,11 @@ The timeWarpOB.plotting module contains functions for plotting the outcome of a 
 .. autofunction:: timeWarpOB.plotting.plotSeries
 
 
+timeWarpOB.tests.basic
+----------------------
+
+Basic tests of the timeWarpOB module functionality.
+
+.. autofunction:: tests.basic.testWarp
+.. autofunction:: tests.basic.sinCos
+
