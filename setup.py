@@ -13,7 +13,7 @@ setup(
 	long_description=long_description,
 	url='https://github.com/oliverbinns/timeWarpOB',
     author='Oliver Binns',
-    author_email='coontact@oliverbinns.com',
+    author_email='contact@oliverbinns.com',
     license='MIT',
     classifiers=[
         # How mature is this project? Common values are
