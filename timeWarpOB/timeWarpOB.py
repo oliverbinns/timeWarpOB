@@ -191,13 +191,6 @@ def ERPwarp(dist,x,y,w=0,g=0):
 
 	costMat[0][0] = dist[0][0]
 
-	# Apply warp window
-	if w != 0:
-		for i in range(0, n):
-			for j in range(0, n):
-				if abs(i-j) >= w:
-					costMat[i][j] = float("inf")
-
 	# Fill the edges
 	for i in range(1, n):
 		costMat[0][i] =  costMat[0][i-1] + abs(dist[0][i] - g)
@@ -213,6 +206,13 @@ def ERPwarp(dist,x,y,w=0,g=0):
 			OpDel = costMat[i][j-1] + abs(y[i] - g)
 
 			costMat[i][j] = min(OpMatch,OpDel,OpIns)
+
+	# Apply warp window
+	if w != 0:
+		for i in range(0, n):
+			for j in range(0, n):
+				if abs(i-j) >= w:
+					costMat[i][j] = float("inf")
 
 	return costMat
 
@@ -352,12 +352,12 @@ def backTrace(costMat,dist):
 		backTraceCost += dist[i][j]
 		path.append([i,j])
 
-		if i > j:
+		if j > i:
 			timeAhead += 1
-			amountAhead += i - j
-		elif j > i:
+			amountAhead += j - i
+		elif i > j:
 			timeBehind += 1
-			amountBehind += j - i
+			amountBehind += i - j
 		else:
 			timeSync +=1
 
@@ -376,7 +376,8 @@ def backTrace(costMat,dist):
 	if timeBehind > 0:
 		warpStats["avgBehind"] = amountBehind / timeBehind
 
-	warpStats["avgWarp"] = (amountAhead - amountBehind) / (timeAhead + timeBehind + timeSync)
+	warpStats["avgWarp"] = (amountBehind - amountAhead) / (timeAhead + timeBehind + timeSync)
 
 	return path, backTraceCost, warpStats
+
 
