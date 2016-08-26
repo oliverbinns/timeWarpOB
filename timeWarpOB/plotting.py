@@ -114,7 +114,7 @@ def plotWarp(a,b,warpObj, ts=[]):
 	plt.show(block=False);
 
 
-def plotSeries(a,b,path):
+def plotSeries(a,b,warpObj):
 	'''Plots the two time series with warp lines as a single plot
 
 	Parameters
