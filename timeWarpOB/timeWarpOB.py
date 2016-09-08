@@ -148,11 +148,22 @@ def L1distances(a,b):
 		for j in range(0, m):
 			distance[i].append(0)
 
+	containsNaN = False
 	for i in range(n):
-		for j in range(m):
-			if a[i] == 'nan' or b[j] == 'nan':
-				distance[i][j] = 0
-			else:
+		if a[i] == 'nan' or b[j] == 'nan':
+			containsNaN = True
+
+	if(containsNaN):
+		print("Warning: at least one of the time series contains NaN values.  Time Warping performance will be impacted.")
+		for i in range(n):
+			for j in range(m):
+				if a[i] == 'nan' or b[j] == 'nan':
+					distance[i][j] = 0
+				else:
+					distance[i][j] = abs(a[i] - b[j])
+	else:
+		for i in range(n):
+			for j in range(m):
 				distance[i][j] = abs(a[i] - b[j])
 
 	return distance 
