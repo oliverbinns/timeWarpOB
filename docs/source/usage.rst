@@ -38,7 +38,7 @@ Then prepare two python lists of data, along with an optional list containing ti
 
 Alternatively, generate a sin and cos series using the built-in test function (passing ``n`` for the number of half-cycles to generate)::
 
-	x, y, ts = tw.tests.basic.sinCos(n=2)
+	a, b, ts = tw.tests.basic.sinCos(n=2)
 
 The two timeseries then be warped using the ``timeWarp()`` function, to return a ``warpObject``::
 	
@@ -48,7 +48,7 @@ This will return a warp object.  Useful statistics about the time warping result
 
 To plot the results of the time warp, use::
 
-	tw.plotting.plotWarp(x,y,wo,ts)
+	tw.plotting.plotWarp(a,b,wo,ts)
 
 Which will give a warping result as a matplotlib chart, containing the following items:
 
