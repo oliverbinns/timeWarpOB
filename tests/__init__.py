@@ -3,3 +3,4 @@ from __future__ import division, print_function
 
 # Define testing imports
 from . import basic
+from . import full

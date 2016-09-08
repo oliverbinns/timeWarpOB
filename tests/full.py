@@ -3,7 +3,13 @@ import timeWarpOB as tw
 import unittest
 
 class test_full(unittest.TestCase):
+	'''
+	Unit testing suite for TimeWarpOB.  To run, use python full.py 
+	at a Command Prompt.
+	'''
+
 	def testSinCos(self):
+		'''Runs multiple sin/cos and check the warp is equal to pi/2'''
 		def testSinCos(n,l):
 			ts = list(np.linspace(0, n*np.pi, l))
 			x = list(np.sin(ts))
@@ -23,14 +29,20 @@ class test_full(unittest.TestCase):
 
 
 	def testWindow(self):
-			ts = list(np.linspace(0, 4*np.pi, 1000))
-			x = list(np.sin(ts))
-			y = list(np.cos(ts))
+		'''Checks the warp window works by setting it equal to 1 
+		(0 warp deviation should be reported)'''
 
-			wo = tw.timeWarp(x,y,method='DTW', window=1)
-			self.assertTrue(wo["warpStats"]["avgWarp"] == 0)
+		ts = list(np.linspace(0, 4*np.pi, 1000))
+		x = list(np.sin(ts))
+		y = list(np.cos(ts))
+
+		wo = tw.timeWarp(x,y,method='DTW', window=1)
+		self.assertTrue(wo["warpStats"]["avgWarp"] == 0)
 
 	def testL1Flat(self):
+		'''Check that the L1 distance is calcuated properly, 
+		using two "flat" series'''
+
 		for i in range(1,500):
 			for j in range(0,100,20):
 				x = list(np.ones(i) * j)
@@ -44,9 +56,9 @@ class test_full(unittest.TestCase):
 
 
 	def testL1Slope(self):
-		'''
-		Uses two linear sloping time series to check the L1 calculation
-		'''
+		'''Check that the L1 distance is calcuated properly, 
+		using two linearly sloping series'''
+
 		x = []
 		y = []
 		l = 500
@@ -64,6 +76,9 @@ class test_full(unittest.TestCase):
 
 
 	def testCostMat(self):
+		''' Test cost matrix calcualtion for DTW and ERP with 
+		linearly sloping time series'''
+
 		x = []
 		y = []
 		l = 500
@@ -88,7 +103,6 @@ class test_full(unittest.TestCase):
 			self.assertTrue(e[i][i] == 0)
 
 
-	
 if __name__ == '__main__':
     unittest.main()
 
