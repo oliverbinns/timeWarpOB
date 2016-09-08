@@ -1,3 +1,22 @@
+# Using numpy for matrix manipulations
+import numpy as np
+
+# Check if the numba module is installed (compiled, high-speed functions)
+import importlib
+foundNumba = importlib.util.find_spec("numba") is not None
+
+if foundNumba:
+	#Numba is installed, import @jit decorator
+	from numba import jit
+else:
+	# Numba not installed, warn the user and make a blank @jit decorator
+	print("WARNING: Numba module not found, calculation may be slow.")
+	def jit(f):
+		'''Numba was not found in the current python environment
+		'''
+		return f
+
+
 def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 	'''This function is the main time warping interface, and acts
 	as a convenient wrapper to the other functions.
@@ -75,6 +94,12 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	'''
 
+	if type(a) == list:
+		a = np.array(a)
+
+	if type(b) == list:
+		b = np.array(b)
+
 	# Create a warp object to return
 	warpObj = {}
 
@@ -85,7 +110,7 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	# Get distance matrix
 	dist = L1distances(a,b)
-
+	
 	# Get the cost matrix
 	if method == 'DTW':
 		costMat = DTWwarp(dist,a,b,w=window)
@@ -100,20 +125,20 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	# Extract the cost
 	cIndex = len(costMat[0]) - 1
-	cost = costMat[cIndex][cIndex]
+	cost = costMat[cIndex,cIndex]
 
 	# Backtrace the warp path
 	path, backTraceCost, warpStats = backTrace(costMat,dist)
 
 	# Return the results
 	if retMat == True:
-		warpObj["costMat"] = costMat
-		warpObj["distMat"] = dist
+		warpObj["costMat"] = costMat.tolist()
+		warpObj["distMat"] = dist.tolist()
 	
 	warpObj["cost"] = cost
 	warpObj["backTraceCost"] = backTraceCost
 	warpObj["warpStats"] = warpStats
-	warpObj["backTracePath"] = path
+	warpObj["backTracePath"] = path.tolist()
 	
 	if window == 0:
 		warpObj["warpWindow"] = len(a)
@@ -123,7 +148,7 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 	return warpObj
 
 
-
+@jit
 def L1distances(a,b):
 	'''Calcluates the L1 distance matrix between two time series.
 
@@ -143,32 +168,15 @@ def L1distances(a,b):
 	n = len(a)
 	m = len(b)
 
-	distance = [[] for _ in range(n)]
-	for i in range(0, n):
-		for j in range(0, m):
-			distance[i].append(0)
+	distance = np.zeros((n,m))
 
-	containsNaN = False
 	for i in range(n):
-		if a[i] == 'nan' or b[j] == 'nan':
-			containsNaN = True
-
-	if(containsNaN):
-		print("Warning: at least one of the time series contains NaN values.  Time Warping performance will be impacted.")
-		for i in range(n):
-			for j in range(m):
-				if a[i] == 'nan' or b[j] == 'nan':
-					distance[i][j] = 0
-				else:
-					distance[i][j] = abs(a[i] - b[j])
-	else:
-		for i in range(n):
-			for j in range(m):
-				distance[i][j] = abs(a[i] - b[j])
+		for j in range(m):
+			distance[i,j] = abs(a[i] - b[j])
 
 	return distance 
 
-
+@jit
 def ERPwarp(dist,x,y,w=0,g=0):
 	'''Calcluates the ERP cost matrix between two time series.
 
@@ -195,40 +203,37 @@ def ERPwarp(dist,x,y,w=0,g=0):
 	n = len(x)
 	m = len(y)
 
-	costMat = [[] for _ in range(n)]
-	for i in range(0, n):
-		for j in range(0, m):
-			costMat[i].append(0)
+	costMat = np.zeros((n,m))
 
-	costMat[0][0] = dist[0][0]
+	costMat[0,0] = dist[0,0]
 
 	# Fill the edges
 	for i in range(1, n):
-		costMat[0][i] =  costMat[0][i-1] + abs(dist[0][i] - g)
+		costMat[0,i] =  costMat[0,i-1] + abs(dist[0,i] - g)
 
 	for i in range(1, n):
-		costMat[i][0] = costMat[i-1][0] + abs(dist[i][0] - g)
+		costMat[i,0] = costMat[i-1,0] + abs(dist[i,0] - g)
 
 	# Fill the rest of the matrix
 	for i in range(1, n):
 		for j in range(1, n):
-			OpMatch = costMat[i-1][j-1] + dist[i][j]
-			OpIns = costMat[i-1][j] + abs(x[i] - g)
-			OpDel = costMat[i][j-1] + abs(y[i] - g)
+			OpMatch = costMat[i-1,j-1] + dist[i,j]
+			OpIns = costMat[i-1,j] + abs(x[i] - g)
+			OpDel = costMat[i,j-1] + abs(y[i] - g)
 
-			costMat[i][j] = min(OpMatch,OpDel,OpIns)
+			costMat[i,j] = min(OpMatch,OpDel,OpIns)
 
 	# Apply warp window
 	if w != 0:
 		for i in range(0, n):
 			for j in range(0, n):
 				if abs(i-j) >= w:
-					costMat[i][j] = float("inf")
+					costMat[i,j] = float("inf")
 
 	return costMat
 
 
-
+@jit
 def DTWwarp(dist,x,y,w=0):
 	'''Calcluates the ERP cost matrix between two time series.
 
@@ -253,36 +258,33 @@ def DTWwarp(dist,x,y,w=0):
 	n = len(x)
 	m = len(y)
 
-	costMat = [[] for _ in range(n)]
-	for i in range(0, n):
-		for j in range(0, m):
-			costMat[i].append(0)
+	costMat = np.zeros((n,m))
 
-	costMat[0][0] = dist[0][0]
+	costMat[0,0] = dist[0,0]
 
 	# Fill the edges
 	for i in range(1, n):
-		costMat[0][i] = dist[0][i] + costMat[0][i-1]
+		costMat[0,i] = dist[0,i] + costMat[0,i-1]
 
 	for i in range(1, n):
-		costMat[i][0] = dist[i][0] + costMat[i-1][0]
+		costMat[i,0] = dist[i,0] + costMat[i-1,0]
 
 	# Fill the rest of the matrix
 	for i in range(1, n):
 		for j in range(1, n):
-			minMove = min(costMat[i-1][j-1], costMat[i-1][j], costMat[i][j-1])
-			costMat[i][j] = minMove + dist[i][j]
+			minMove = min(costMat[i-1,j-1], costMat[i-1,j], costMat[i,j-1])
+			costMat[i,j] = minMove + dist[i,j]
 
 	# Apply warp window
 	if w != 0:
 		for i in range(0, n):
 			for j in range(0, n):
 				if abs(i-j) >= w:
-					costMat[i][j] = float("inf")
+					costMat[i,j] = float("inf")
 
 	return costMat
 
-
+@jit
 def backTrace(costMat,dist):
 	'''Finds the optimal warping path by backtracking through the cost matrix.
 
@@ -336,12 +338,12 @@ def backTrace(costMat,dist):
 	amountAhead = 0
 	amountBehind = 0
 
-	path = []
+	
 	i = len(costMat) - 1
 	j = len(costMat[0]) - 1
+	path = np.array([i,j])
 
-	path.append([i,j])
-	backTraceCost = dist[i][j]
+	backTraceCost = dist[i,j]
 
 	while i>0 or j>0:
 		if i==0:
@@ -351,17 +353,17 @@ def backTrace(costMat,dist):
 			# Edge condition (only one direction)
 			i = i - 1
 		else:
-			minMove = min(costMat[i-1][j-1], costMat[i-1][j], costMat[i][j-1])
-			if costMat[i-1][j] == minMove:
+			minMove = min(costMat[i-1,j-1], costMat[i-1,j], costMat[i,j-1])
+			if costMat[i-1,j] == minMove:
 				i = i - 1
-			elif costMat[i][j-1] == minMove:
+			elif costMat[i,j-1] == minMove:
 				j = j - 1
 			else:
 				i = i - 1
 				j = j - 1
 		
-		backTraceCost += dist[i][j]
-		path.append([i,j])
+		backTraceCost += dist[i,j]
+		path = np.vstack([path,[i,j]])
 
 		if j > i:
 			timeAhead += 1
@@ -390,5 +392,4 @@ def backTrace(costMat,dist):
 	warpStats["avgWarp"] = (amountBehind - amountAhead) / (timeAhead + timeBehind + timeSync)
 
 	return path, backTraceCost, warpStats
-
 
