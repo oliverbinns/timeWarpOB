@@ -243,7 +243,7 @@ def ERPwarp(dist,x,y,w=0,g=0):
 		for i in range(0, n):
 			for j in range(0, n):
 				if abs(i-j) >= w:
-					costMat[i,j] = float("inf")
+					costMat[i,j] = np.inf
 
 	return costMat
 
@@ -295,11 +295,10 @@ def DTWwarp(dist,x,y,w=0):
 		for i in range(0, n):
 			for j in range(0, n):
 				if abs(i-j) >= w:
-					costMat[i,j] = float("inf")
+					costMat[i,j] = np.inf
 
 	return costMat
 
-@jit
 def backTrace(costMat,dist):
 	'''Finds the optimal warping path by backtracking through the cost matrix.
 
