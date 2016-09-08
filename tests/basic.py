@@ -1,4 +1,4 @@
-def sinCos(n=2):
+def sinCos(n=2, l=200):
 	''' Generates a test dataset of sin and cosine over 200
 	points in a time series.
 
@@ -6,6 +6,8 @@ def sinCos(n=2):
 	----------
 		n : int
 			Number of half-cycles to calculate the values over
+		l : int
+			Number of points in the time series
 
 	Returns
 	-------
@@ -18,7 +20,7 @@ def sinCos(n=2):
 	'''
 	import numpy as np
 
-	ts = list(np.linspace(0, n*np.pi, 200))
+	ts = list(np.linspace(0, n*np.pi, l))
 	x = list(np.sin(ts))
 	y = list(np.cos(ts))
 
