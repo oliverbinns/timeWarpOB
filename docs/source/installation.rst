@@ -12,7 +12,7 @@ Calculation speed can be substantially improved by installing the numba module, 
 	import timeWarpOB as tw
 	print(tw.foundNumba)
 
-You can quickly test the tiemWarpOB installation by using::
+You can quickly test the timeWarpOB installation by using::
 
 	x, y, ts = tw.tests.basic.sinCos()
 	tw.tests.basic.testWarp(x,y,ts)
