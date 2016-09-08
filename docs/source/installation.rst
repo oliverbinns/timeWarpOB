@@ -5,9 +5,14 @@ timeWarpOB can be installed by using pip::
 
 	pip install timeWarpOB
 
-Note that timeWarpOB requires matplotplib for plotting the warp graphs and numpy for the test cases.
+Note that timeWarpOB requires numpy to be be installed for handling the time series and results arrays.  The matplotplib module is also required for plotting the warp graphs.
 
-You can quickly test the installation by using::
+Calculation speed can be substantially improved by installing the numba module, which compiles some of the inner calculation loops to give calculation performance comparable to native compiled code. However, timeWarpOB can still run without numba.  To check if numba is detected by timeWarpOB, run the following in python::
+
+	import timeWarpOB as tw
+	print(tw.foundNumba)
+
+You can quickly test the tiemWarpOB installation by using::
 
 	x, y, ts = tw.tests.basic.sinCos()
 	tw.tests.basic.testWarp(x,y,ts)

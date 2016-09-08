@@ -9,6 +9,7 @@ Contents:
    :maxdepth: 2
 
    about
+   changes
    installation
    usage
    APIref
