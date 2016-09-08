@@ -7,11 +7,11 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-	name='timeWarpOB',
-	version='1.0.1',
-	description='A Dynamic Time Warping implementation',
-	long_description=long_description,
-	url='https://github.com/oliverbinns/timeWarpOB',
+    name='timeWarpOB',
+    version='1.1.0',
+    description='A Dynamic Time Warping implementation',
+    long_description=long_description,
+    url='https://github.com/oliverbinns/timeWarpOB',
     author='Oliver Binns',
     author_email='contact@oliverbinns.com',
     license='MIT',
@@ -20,7 +20,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
@@ -36,4 +36,4 @@ setup(
     keywords='time warp algorithm timeseries',
     packages=find_packages(exclude=['contrib']),
     install_requires=['matplotlib','numpy'],
-	)
+    )
