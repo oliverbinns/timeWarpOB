@@ -2,7 +2,7 @@
 import numpy as np
 
 # Check if the numba module is installed (compiled, high-speed functions)
-import importlib
+import importlib.util
 foundNumba = importlib.util.find_spec("numba") is not None
 
 if foundNumba:
@@ -10,7 +10,6 @@ if foundNumba:
 	from numba import jit
 else:
 	# Numba not installed, warn the user and make a blank @jit decorator
-	print("WARNING: Numba module not found, calculation may be slow.")
 	def jit(f):
 		'''Numba was not found in the current python environment
 		'''
@@ -23,9 +22,9 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	Parameters
 	----------
-		a : list
+		a : list or numpy 1D-array
 			First time series, which will be compared against time series b
-		b : list 
+		b : list or numpy 1D-array
 			Second time series (reference)
 		method : str
 			Time warping method ``{'DTW','ERP'}`` - see below
@@ -43,17 +42,17 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 		warpObj.backTraceCost : float
 			The sum cost of following the backtrace through the cost matrix
 		warpObj.backTracePath : list
-			List of pairs of coordinates in time-space describing the backtrace through
+			List or numpy array of pairs of coordinates in time-space describing the backtrace through
 			the cost matrix
 		warpObj.cost : float
 			Bottom left value on the cost matrix.  With no warping window, this should 
 			equal warpObj.backTraceCost
 		warpObj.costMat : list
-			A matrix (list of lists) describing the cost matrix between the two time 
+			A matrix (list of lists) or numpy array describing the cost matrix between the two time 
 			series.  For a series of length n, this matrix will be of size n x n.  Only 
 			output if ``retMat = True`` in the input parameters
 		warpObj.distMat : list	
-			A matrix (list of lists) describing the L1-distance matrix between the two 
+			A matrix (list of lists) or numpy array describing the L1-distance matrix between the two 
 			time series.  For a series of length n, this matrix will be of size n x n.  
 			Only output if ``retMat = True`` in the input parameters
 		warpObj.warpWindow : int
@@ -86,6 +85,10 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	Notes
 	-----
+	* If lists are supplied, the output matrices will be in list form.  If numpy arrays are supplied, the output will be as numpy arrays.
+
+	* Numpy arrays will calculate faster, as no internal type conversion is required.
+
 	* Time series should be of equal length.  If they are not, the longer will be clipped from the end.
 
 	* ERP and DTW methods are available.  For information on how they work, see the module documentation.
@@ -94,10 +97,14 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	'''
 
+	# Check if a list has been passed or numpy object
+	usingList = False
 	if type(a) == list:
+		usingList = True
 		a = np.array(a)
 
 	if type(b) == list:
+		usingList = True
 		b = np.array(b)
 
 	# Create a warp object to return
@@ -132,13 +139,21 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 
 	# Return the results
 	if retMat == True:
-		warpObj["costMat"] = costMat.tolist()
-		warpObj["distMat"] = dist.tolist()
+		if usingList:
+			warpObj["costMat"] = costMat.tolist()
+			warpObj["distMat"] = dist.tolist()
+		else:
+			warpObj["costMat"] = costMat
+			warpObj["distMat"] = dist
 	
 	warpObj["cost"] = cost
 	warpObj["backTraceCost"] = backTraceCost
 	warpObj["warpStats"] = warpStats
-	warpObj["backTracePath"] = path.tolist()
+
+	if usingList:
+		warpObj["backTracePath"] = path.tolist()
+	else:
+		warpObj["backTracePath"] = path
 	
 	if window == 0:
 		warpObj["warpWindow"] = len(a)
