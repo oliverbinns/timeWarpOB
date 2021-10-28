@@ -1,7 +1,7 @@
 About timeWarpOB
 ================
 
-timeWarpOB is a python implementation of Dynamic Time Warping.  Time Warping allows time-series data to be compared when one of the time series exhibits accellerations or decellerations relative to the other at different points in time.  
+timeWarpOB is a python implementation of Dynamic Time Warping.  Time Warping allows time-series data to be compared when one of the time series exhibits accelerations or decelerations relative to the other at different points in time.  
 
 It has applications in speech recognition (where people may pronounce sounds at different rates) and in the general analysis of time-series data (e.g. financial market indicators over time), where is can be combined with other machine learning techniques. [#f1]_
 

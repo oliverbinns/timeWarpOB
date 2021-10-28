@@ -72,7 +72,7 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 			The total sum of the number of periods that time series a was lagging
 			time series b by.
 		warpObj.warpStats.avgAhead : int
-			Average amount of periods that a was ahead of a by, i.e. 
+			Average amount of periods that a was ahead of b by, i.e. 
 			amountAhead divided by timeAhead
 		warpObj.warpStats.avgAhead : int
 			Average amount of periods that a was behind b by, i.e. 
@@ -81,7 +81,7 @@ def timeWarp(a,b,method='DTW',window=0,retMat=True,**kwargs):
 			Average amount of periods that a ahead or behind b by, i.e. 
 			``(amountAhead - amountBehind) / (timeAhead + timeBehind + timeSync)``
 			This will give positive values if a is on average ahead of b and negative
-			values is a is on average behind b.
+			values if a is on average behind b.
 
 	Notes
 	-----

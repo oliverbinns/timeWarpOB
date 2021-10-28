@@ -1,7 +1,7 @@
 API reference
 =============
 
-The following is a reference guide for the functions in the modules of neurOB, sorted by submodule.
+The following is a reference guide for the functions in the modules of timeWarpOB, sorted by submodule.
 
 
 timeWarpOB
